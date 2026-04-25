@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Chandan Ji Team</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0e14;
+  --surface:#111720;
+  --surface2:#18202c;
+  --surface3:#1e2836;
+  --border:#1f2d3d;
+  --border2:#263445;
+  --primary:#3b82f6;
+  --accent:#60a5fa;
+  --text:#e2eaf4;
+  --text2:#7a90a8;
+  --text3:#4a6070;
+  --success:#22c55e;
+  --success-dim:rgba(34,197,94,0.15);
+  --danger:#ef4444;
+  --danger-dim:rgba(239,68,68,0.15);
+  --warning:#f59e0b;
+  --nav-h:70px;
+  --hdr-h:58px;
+  --r:14px;
+  --r-sm:10px;
+}
+html,body{height:100%;overscroll-behavior:none}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+  user-select:none;-webkit-user-select:none;overflow-x:hidden;overflow-y:auto}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(59,130,246,.08),transparent 70%)}
+
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr-h);
+  background:rgba(10,14,20,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between;padding:0 18px;z-index:200}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.brand-ico{width:34px;height:34px;background:linear-gradient(135deg,#3b82f6,#818cf8);
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;box-shadow:0 4px 14px rgba(59,130,246,.35)}
+.brand-ico svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.2}
+.brand-name{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.brand-name em{color:var(--accent);font-style:normal}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-user{font-size:11px;color:var(--text2);font-weight:700;letter-spacing:.3px;
+  background:var(--surface2);padding:5px 12px;border-radius:20px;border:1px solid var(--border)}
+.logout-btn{width:34px;height:34px;border-radius:8px;background:none;border:1px solid var(--border);
+  color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.logout-btn:hover{background:var(--danger-dim);border-color:var(--danger);color:var(--danger)}
+.logout-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+.bnav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);
+  background:rgba(10,14,20,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-around;z-index:200;padding-bottom:env(safe-area-inset-bottom,0)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 0;background:none;border:none;cursor:pointer;color:var(--text3);
+  transition:.2s;font-family:'DM Sans',sans-serif;position:relative}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;transition:.2s}
+.nav-item span{font-size:10px;font-weight:700;letter-spacing:.3px;transition:.2s}
+.nav-item.active{color:var(--primary)}
+.nav-item.active svg{stroke-width:2.4}
+.nav-item.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:28px;height:2px;background:var(--primary);border-radius:0 0 4px 4px}
+.nav-fab-slot{flex:1.2;display:flex;align-items:center;justify-content:center}
+.nav-fab{width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#818cf8);color:#fff;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 22px rgba(59,130,246,.55);transition:.2s;margin-bottom:10px}
+.nav-fab:active{transform:scale(.88)}
+.nav-fab svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.5}
+
+.page{display:none;min-height:100dvh;
+  padding:calc(var(--hdr-h) + 14px) 16px 180px}
+.page.active{display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateX(-50%) translateY(0)}to{opacity:0;transform:translateX(-50%) translateY(-12px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes payCardResolve{0%{opacity:1;transform:scale(1)}40%{transform:scale(1.018)}100%{opacity:0;transform:scale(.96)}}
+@keyframes rippleOut{0%{transform:scale(0);opacity:.5}100%{transform:scale(2.8);opacity:0}}
+@keyframes btnClick{0%{transform:scale(1)}40%{transform:scale(.95);opacity:.82}100%{transform:scale(1);opacity:1}}
+.anim{animation:fadeUp .28s cubic-bezier(.34,1.2,.64,1) both}
+
+.toast{position:fixed;top:calc(var(--hdr-h)+10px);left:50%;transform:translateX(-50%);
+  z-index:9998;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:8px;animation:toastIn .3s ease;
+  white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.toast-success{background:rgba(34,197,94,.95);color:#fff}
+.toast-error{background:rgba(239,68,68,.95);color:#fff}
+.toast-info{background:rgba(59,130,246,.95);color:#fff}
+
+.skel{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);
+  background-size:300% 100%;animation:shimmer 1.6s infinite;border-radius:8px}
+.skel-row{height:62px;margin-bottom:6px}
+.skel-stat{height:72px;border-radius:var(--r)}
+
+.card{background:linear-gradient(#111720,#141c28);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.card-glow{box-shadow:0 0 0 1px var(--border),0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-box{background:linear-gradient(#111720,#141c28);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 6px;text-align:center}
+.stat-val{font-size:18px;font-weight:800;line-height:1.2;letter-spacing:-.5px}
+.stat-lbl{font-size:9px;color:var(--text2);margin-top:4px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase}
+
+.list-row{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 14px;background:linear-gradient(#111720,#141c28);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:6px;cursor:pointer;transition:.15s}
+.list-row:active{background:var(--surface2);transform:scale(.99)}
+.lr-name{font-size:14px;font-weight:600}
+.lr-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+.inp{width:100%;background:var(--surface2);border:1px solid var(--border2);
+  border-radius:var(--r-sm);padding:13px 16px;color:var(--text);font-size:14px;
+  font-family:'DM Sans',sans-serif;outline:none;transition:.2s}
+.inp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+.inp::placeholder{color:var(--text3)}
+select.inp{appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6070' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+select.inp option{background:var(--surface2);color:var(--text)}
+
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--text2);
+  letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
+
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:var(--r-sm);
+  font-size:14px;font-weight:700;cursor:pointer;
+  transition:transform .15s ease,opacity .15s ease,box-shadow .15s ease;
+  text-align:center;font-family:'DM Sans',sans-serif;letter-spacing:.2px;
+  position:relative;overflow:hidden}
+.btn:active{transform:scale(.97);opacity:.9}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#818cf8);color:#fff;
+  box-shadow:0 4px 18px rgba(59,130,246,.35)}
+.btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+.btn-sm{width:auto;padding:8px 16px;font-size:12px}
+.btn.loading{opacity:.65;pointer-events:none;cursor:not-allowed}
+.btn.loading:active{transform:none;opacity:.65}
+.btn-click{animation:btnClick .22s ease forwards}
+
+.btn-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.35);
+  transform:scale(0);animation:rippleOut .55s ease-out forwards;pointer-events:none}
+
+.spinner-sm{display:inline-block;width:14px;height:14px;
+  border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+  border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+.btn-secondary .spinner-sm{border-color:rgba(120,144,168,.4);border-top-color:var(--text2)}
+
+.tabs{display:flex;background:var(--surface2);border-radius:var(--r-sm);
+  padding:3px;margin-bottom:14px;border:1px solid var(--border)}
+.tab{flex:1;padding:9px;border:none;background:none;color:var(--text3);
+  font-size:13px;font-weight:700;border-radius:8px;cursor:pointer;transition:.2s;
+  font-family:'DM Sans',sans-serif}
+.tab.on{background:var(--primary);color:#fff;box-shadow:0 2px 10px rgba(59,130,246,.4)}
+
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:.2px}
+.badge-ok{background:var(--success-dim);color:var(--success)}
+.badge-no{background:var(--danger-dim);color:var(--danger)}
+.badge-info{background:rgba(59,130,246,.15);color:var(--accent)}
+
+.back{background:none;border:none;color:var(--text2);font-size:13px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;gap:5px;margin-bottom:14px;padding:4px 0;
+  font-family:'DM Sans',sans-serif}
+.back:hover{color:var(--text)}
+.back svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5}
+
+.fab-bar{position:fixed;bottom:calc(var(--nav-h)+12px);left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:16px;z-index:190;
+  padding:0 24px;pointer-events:none}
+.fab-btn{pointer-events:all;display:flex;flex-direction:column;align-items:center;gap:4px;
+  border:none;cursor:pointer;background:none;font-family:'DM Sans',sans-serif;
+  transition:transform .15s}
+.fab-btn:active{transform:scale(.88)}
+.fab-circle{width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center}
+.fab-circle svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5}
+.fab-circle-lg{width:66px;height:66px;border-radius:50%}
+.fab-lbl{font-size:10px;font-weight:700;letter-spacing:.5px}
+.fab-red .fab-circle{background:linear-gradient(135deg,#ef4444,#f87171);
+  box-shadow:0 6px 22px rgba(239,68,68,.5)}
+.fab-red .fab-lbl{color:#ef4444}
+.fab-blue .fab-circle{background:linear-gradient(135deg,#3b82f6,#818cf8);
+  box-shadow:0 6px 26px rgba(59,130,246,.55)}
+.fab-blue .fab-lbl{color:var(--accent)}
+.fab-gray .fab-circle{background:var(--surface2);border:1px solid var(--border2);
+  box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.fab-gray .fab-circle svg{stroke:var(--text2)}
+.fab-gray .fab-lbl{color:var(--text3)}
+
+.chart-wrap{background:linear-gradient(#111720,#141c28);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;margin-bottom:12px}
+.chart-hd{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:12px}
+
+.pg-hd{font-size:20px;font-weight:900;letter-spacing:-.5px;margin-bottom:14px}
+
+.empty{text-align:center;color:var(--text3);font-size:13px;font-weight:600;padding:48px 0}
+.err-msg{color:var(--danger);font-size:13px;font-weight:600;text-align:center;margin-top:8px}
+.ok-msg{color:var(--success);font-size:13px;font-weight:600;text-align:center;margin-top:8px}
+.mt1{margin-top:6px}.mt2{margin-top:12px}.mt3{margin-top:18px}
+.mb1{margin-bottom:6px}.mb2{margin-bottom:12px}
+.row{display:flex;align-items:center}.jb{justify-content:space-between}
+.hidden{display:none!important}.tc{text-align:center}
+.col-ok{color:var(--success)}.col-no{color:var(--danger)}.col-p{color:var(--primary)}
+.bold{font-weight:700}.sm{font-size:13px}.xs{font-size:11px}.dim{color:var(--text2)}
+
+.dehari-live{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(129,140,248,.1));
+  border:1px solid rgba(59,130,246,.3);border-radius:var(--r);padding:14px;
+  margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
+.dehari-live-val{font-size:28px;font-weight:900;color:var(--accent);letter-spacing:-1px}
+.dehari-live-amt{font-size:20px;font-weight:800;color:var(--success)}
+.dehari-live-lbl{font-size:10px;font-weight:700;letter-spacing:.6px;color:var(--text3);
+  text-transform:uppercase;margin-top:2px}
+
+.login-shell{min-height:100dvh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:28px 20px;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(59,130,246,.1),transparent 70%)}
+.login-brand{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.login-ico{width:54px;height:54px;border-radius:16px;
+  background:linear-gradient(135deg,#3b82f6,#818cf8);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 28px rgba(59,130,246,.45)}
+.login-ico svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2}
+.login-title{font-size:26px;font-weight:900;letter-spacing:-.5px}
+.login-title em{color:var(--accent);font-style:normal}
+.login-sub{font-size:12px;color:var(--text2);font-weight:600;
+  letter-spacing:.8px;text-transform:uppercase}
+.login-box{width:100%;max-width:360px;margin-top:28px}
+
+.pay-action-row{display:flex;gap:8px;margin-top:10px}
+.pay-card-resolving{animation:payCardResolve .42s ease forwards;pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ LOGIN SCREEN ═══════════════════════════ -->
+<div id="loginScreen" class="login-shell">
+  <div class="login-brand">
+    <div class="login-ico">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    </div>
+    <div>
+      <div class="login-title">CHANDAN <em>JI TEAM</em></div>
+      <div class="login-sub">Labour Management System</div>
+    </div>
+  </div>
+  <div class="login-box">
+    <div class="tabs mt2">
+      <button class="tab" id="tabAdmin" onclick="switchLoginTab('admin')">Admin</button>
+<button class="tab on" id="tabWorker" onclick="switchLoginTab('worker')">Worker</button>
+    </div>
+    <div id="adminForm" class="card card-glow anim hidden">
+      <div class="fg"><label>Admin ID</label><input class="inp" id="adminId" placeholder="Enter admin ID" autocomplete="off"></div>
+      <div class="fg"><label>Password</label><input class="inp" id="adminPass" type="password" placeholder="Enter password"></div>
+      <button class="btn btn-primary" onclick="handleAdminLogin(event)">Login as Admin</button>
+      <div id="adminErr" class="err-msg hidden"></div>
+    </div>
+<div id="workerForm" class="card card-glow anim">
+      <div class="fg"><label>Secret Key</label><input class="inp" id="secretKey" placeholder="WK-XXXXX" autocomplete="off"></div>
+      <button class="btn btn-primary" onclick="handleWorkerLogin(event)">Login as Worker</button>
+      <div id="workerErr" class="err-msg hidden"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ APP SHELL ═══════════════════════════ -->
+<div id="appShell" class="hidden">
+  <div class="hdr">
+    <div class="hdr-brand">
+      <div class="brand-ico">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div class="brand-name">CHANDAN <em>JI Team</em></div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-user" id="hdrUser"></div>
+      <button class="logout-btn" onclick="logout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="pageHome"          class="page active"></div>
+  <div id="pageAttendance"    class="page"></div>
+  <div id="pagePayment"       class="page"></div>
+  <div id="pageReport"        class="page"></div>
+  <div id="pageWorkers"       class="page"></div>
+  <div id="pageWorkerProfile" class="page"></div>
+  <div id="pageAddDehari"     class="page"></div>
+  <div id="pageAddPayment"    class="page"></div>
+  <div id="pageAddWorker"     class="page"></div>
+
+  <div class="bnav">
+    <button class="nav-item active" data-page="Home" onclick="navigate('Home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" data-page="Attendance" onclick="navigate('Attendance')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14l2 2 4-4"/></svg>
+      <span>Attend</span>
+    </button>
+    <div class="nav-fab-slot">
+      <button class="nav-fab" onclick="showSubPage('AddDehari')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <button class="nav-item" data-page="Payment" onclick="navigate('Payment')">
+      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span>Payment</span>
+    </button>
+    <button class="nav-item" data-page="Report" onclick="navigate('Report')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Report</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SAVING OVERLAY ═══════════════════════════ -->
+<div id="savingOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+  <div style="width:52px;height:52px;border:4px solid rgba(59,130,246,.3);border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite"></div>
+  <div style="font-size:13px;font-weight:700;color:var(--text2);letter-spacing:.5px" id="overlayMsg">Saving...</div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   CONFIGURATION
+════════════════════════════════════════════════════════════════════ */
+const ADMIN_ID   = "admin";
+const ADMIN_PASS = "123456";
+
+// ⚠️ Replace this with your deployed Google Apps Script URL
+const API_URL = "https://script.google.com/macros/s/AKfycbxqkHQgoP_Diq-VUnrix9pQBV5dW9cvDgXirQZBneMdZV1xn6-HC81D1H1WlhO0R0lV/exec";
+
+const STORAGE = {
+  workers:    'lms_workers',
+  attendance: 'lms_attendance',
+  payments:   'lms_payments',
+  auth:       'lms_auth'
+};
+
+/* ════════════════════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════════════════════ */
+let currentUser       = null;
+let workers           = [];
+let attendance        = [];
+let payments          = [];
+let monthlyChart      = null;
+let paymentProcessing = false;
+
+/* ════════════════════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════════════════════ */
+function getLocal(k)    { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } }
+function setLocal(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+function genId()        { return 'WK-'  + Math.random().toString(36).substring(2, 7).toUpperCase(); }
+function genPayId()     { return 'PAY-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase(); }
+function today()        { return new Date().toISOString().split('T')[0]; }
+function fmtDate(d)     { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch { return d || ''; } }
+
+function normalizeWorker(w) {
+  if (!w.salaryType) w.salaryType = (w.monthlySalary > 0) ? 'monthly' : 'daily';
+  return w;
+}
+
+function getPaymentStatus(p) {
+  if (!p) return 'pending';
+  const s = String(p.status || '').toLowerCase().trim();
+  if (s === 'approved') return 'approved';
+  if (s === 'rejected') return 'rejected';
+  return 'pending';
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════════ */
+function showToast(msg, type = 'success') {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = ({ success: '✓  ', error: '✕  ', info: 'ℹ  ' }[type] || '') + msg;
+  document.body.appendChild(el);
+  setTimeout(() => {
+    el.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(() => el.remove(), 350);
+  }, 2400);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   OVERLAY
+════════════════════════════════════════════════════════════════════ */
+function showOverlay(msg = 'Saving...') {
+  document.getElementById('overlayMsg').textContent = msg;
+  document.getElementById('savingOverlay').classList.remove('hidden');
+  document.getElementById('savingOverlay').style.display = 'flex';
+}
+function hideOverlay() {
+  document.getElementById('savingOverlay').classList.add('hidden');
+  document.getElementById('savingOverlay').style.display = 'none';
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SKELETONS
+════════════════════════════════════════════════════════════════════ */
+function skelRows(n = 4)  { return Array(n).fill(0).map(() => `<div class="skel skel-row"></div>`).join(''); }
+function skelStats()      { return `<div class="stat-row">${Array(3).fill(0).map(() => `<div class="skel skel-stat"></div>`).join('')}</div>`; }
+
+/* ════════════════════════════════════════════════════════════════════
+   BUTTON ANIMATION + RIPPLE
+════════════════════════════════════════════════════════════════════ */
+function addRipple(btn, e) {
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 1.4;
+  const x    = (e.clientX - rect.left) - (size / 2);
+  const y    = (e.clientY - rect.top)  - (size / 2);
+  const rip  = document.createElement('span');
+  rip.className = 'btn-ripple';
+  rip.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+  btn.appendChild(rip);
+  rip.addEventListener('animationend', () => rip.remove());
+}
+
+function animateBtn(btn, e) {
+  if (!btn) return;
+  btn.classList.remove('btn-click');
+  void btn.offsetWidth; // force reflow
+  btn.classList.add('btn-click');
+  btn.addEventListener('animationend', () => btn.classList.remove('btn-click'), { once: true });
+  if (e) addRipple(btn, e);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PAYMENT LOADING STATE
+════════════════════════════════════════════════════════════════════ */
+function setPaymentLoading(paymentId, loading) {
+  const appBtn = document.querySelector(`[data-pay-approve="${paymentId}"]`);
+  const rejBtn = document.querySelector(`[data-pay-reject="${paymentId}"]`);
+  if (!appBtn && !rejBtn) return;
+  if (loading) {
+    if (appBtn) { appBtn.classList.add('loading'); appBtn.setAttribute('disabled', ''); appBtn.innerHTML = `<span class="spinner-sm"></span>Processing`; }
+    if (rejBtn) { rejBtn.classList.add('loading'); rejBtn.setAttribute('disabled', ''); }
+  } else {
+    if (appBtn) { appBtn.classList.remove('loading'); appBtn.removeAttribute('disabled'); appBtn.innerHTML = 'Approve'; }
+    if (rejBtn) { rejBtn.classList.remove('loading'); rejBtn.removeAttribute('disabled'); }
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   API
+════════════════════════════════════════════════════════════════════ */
+async function apiCall(action, data = {}) {
+  if (!API_URL) return null;
+  try {
+    const r = await fetch(API_URL, {
+      method:   'POST',
+      redirect: 'follow',
+      headers:  { 'Content-Type': 'text/plain' },
+      body:     JSON.stringify({ action, ...data })
+    });
+    const json = await r.json();
+    return json;
+  } catch (err) {
+    console.error('apiCall error:', err);
+    return null;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   DATA LOADERS
+════════════════════════════════════════════════════════════════════ */
+async function loadWorkers() {
+  const local = getLocal(STORAGE.workers);
+  const r = await apiCall('getWorkers');
+  if (r && r.data && Array.isArray(r.data) && r.data.length) {
+    const merged = [...local];
+    r.data.forEach(sw => {
+      const i = merged.findIndex(w => w.workerId === sw.workerId);
+      if (i > -1) merged[i] = sw; else merged.push(sw);
+    });
+    workers = merged.map(normalizeWorker);
+    setLocal(STORAGE.workers, workers);
+  } else {
+    workers = local.map(normalizeWorker);
+  }
+  return workers;
+}
+
+async function loadAttendance(wid) {
+  const r = await apiCall('getAttendance', wid ? { workerId: wid } : {});
+  if (r && r.data && Array.isArray(r.data)) {
+    setLocal(STORAGE.attendance, r.data);
+    attendance = r.data;
+  } else {
+    attendance = getLocal(STORAGE.attendance);
+  }
+  if (wid) return attendance.filter(a => a.workerId === wid);
+  return attendance;
+}
+
+async function loadPayments(wid) {
+  const r = await apiCall('getPayments', wid ? { workerId: wid } : {});
+  if (r && r.data && Array.isArray(r.data)) {
+    setLocal(STORAGE.payments, r.data);
+    payments = r.data;
+  } else {
+    payments = getLocal(STORAGE.payments);
+  }
+  if (wid) return payments.filter(p => p.workerId === wid);
+  return payments;
+}
+
+async function saveWorker(w)     { workers.push(w);    setLocal(STORAGE.workers,    workers);    await apiCall('addWorker',    { worker: w }); }
+async function saveAttendance(r) { attendance.push(r); setLocal(STORAGE.attendance, attendance); await apiCall('addAttendance', { record: r }); }
+async function savePayment(r)    { payments.push(r);   setLocal(STORAGE.payments,   payments);   await apiCall('addPayment',   { record: r }); }
+
+function updatePaymentLocal(paymentId, updates) {
+  const idx = payments.findIndex(p => p.paymentId === paymentId);
+  if (idx > -1) {
+    const st = String(payments[idx].status || 'pending').toLowerCase().trim();
+    if (st === 'approved' || st === 'rejected') return false;
+    Object.assign(payments[idx], updates);
+    setLocal(STORAGE.payments, payments);
+    return true;
+  }
+  return false;
+}
+
+function revertPaymentLocal(paymentId, snapshot) {
+  const idx = payments.findIndex(p => p.paymentId === paymentId);
+  if (idx > -1) { payments[idx] = snapshot; setLocal(STORAGE.payments, payments); }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PAYMENT APPROVE
+════════════════════════════════════════════════════════════════════ */
+async function approvePayment(paymentId, triggerEl, e) {
+  if (paymentProcessing) return;
+
+  const p = payments.find(x => x.paymentId === paymentId);
+  if (!p)                                     { showToast('Payment not found', 'error'); return; }
+  if (getPaymentStatus(p) !== 'pending')       { showToast('Already actioned', 'error'); return; }
+  if (currentUser.role !== 'worker')           { showToast('Only worker can approve', 'error'); return; }
+  if (p.workerId !== currentUser.workerId)     { showToast('Not your payment', 'error'); return; }
+
+  if (triggerEl) animateBtn(triggerEl, e || null);
+
+  paymentProcessing = true;
+  setPaymentLoading(paymentId, true);
+  showOverlay('Processing...');
+
+  const snapshot = { ...p };
+  const updates  = {
+    status:        'approved',
+    workerMessage: '',
+    approvedAt:    new Date().toISOString()
+  };
+
+  const localOk = updatePaymentLocal(paymentId, updates);
+  if (!localOk) {
+    paymentProcessing = false;
+    setPaymentLoading(paymentId, false);
+    hideOverlay();
+    showToast('Cannot update payment', 'error');
+    return;
+  }
+
+  try {
+    const res = await apiCall('updatePayment', { paymentId, updates });
+    hideOverlay();
+
+    if (!res || !res.data || res.data.error) {
+      revertPaymentLocal(paymentId, snapshot);
+      paymentProcessing = false;
+      setPaymentLoading(paymentId, false);
+      showToast((res && res.data && res.data.error) ? 'Server: ' + res.data.error : 'Server error', 'error');
+      return;
+    }
+
+    showToast('Payment Approved ✓', 'success');
+    const card = document.querySelector(`[data-pay-card="${paymentId}"]`);
+    if (card) {
+      card.classList.add('pay-card-resolving');
+      card.addEventListener('animationend', () => {
+        paymentProcessing = false;
+        navigate('Payment');
+      }, { once: true });
+    } else {
+      paymentProcessing = false;
+      setTimeout(() => navigate('Payment'), 380);
+    }
+  } catch (err) {
+    revertPaymentLocal(paymentId, snapshot);
+    hideOverlay();
+    paymentProcessing = false;
+    setPaymentLoading(paymentId, false);
+    showToast('Network error, try again', 'error');
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PAYMENT REJECT
+════════════════════════════════════════════════════════════════════ */
+async function rejectPayment(paymentId, triggerEl, e) {
+  if (paymentProcessing) return;
+
+  const p = payments.find(x => x.paymentId === paymentId);
+  if (!p)                                     { showToast('Payment not found', 'error'); return; }
+  if (getPaymentStatus(p) !== 'pending')       { showToast('Already actioned', 'error'); return; }
+  if (currentUser.role !== 'worker')           { showToast('Only worker can reject', 'error'); return; }
+  if (p.workerId !== currentUser.workerId)     { showToast('Not your payment', 'error'); return; }
+
+  const msg = prompt('Reason for rejection (required):');
+  if (msg === null) return;
+  if (!msg.trim()) { showToast('Please enter a reason', 'error'); return; }
+
+  if (triggerEl) animateBtn(triggerEl, e || null);
+
+  paymentProcessing = true;
+  setPaymentLoading(paymentId, true);
+  showOverlay('Processing...');
+
+  const snapshot = { ...p };
+  const updates  = {
+    status:        'rejected',
+    workerMessage: msg.trim(),
+    approvedAt:    new Date().toISOString()
+  };
+
+  const localOk = updatePaymentLocal(paymentId, updates);
+  if (!localOk) {
+    paymentProcessing = false;
+    setPaymentLoading(paymentId, false);
+    hideOverlay();
+    showToast('Cannot update payment', 'error');
+    return;
+  }
+
+  try {
+    const res = await apiCall('updatePayment', { paymentId, updates });
+    hideOverlay();
+
+    if (!res || !res.data || res.data.error) {
+      revertPaymentLocal(paymentId, snapshot);
+      paymentProcessing = false;
+      setPaymentLoading(paymentId, false);
+      showToast((res && res.data && res.data.error) ? 'Server: ' + res.data.error : 'Server error', 'error');
+      return;
+    }
+
+    showToast('Payment Rejected', 'error');
+    const card = document.querySelector(`[data-pay-card="${paymentId}"]`);
+    if (card) {
+      card.classList.add('pay-card-resolving');
+      card.addEventListener('animationend', () => {
+        paymentProcessing = false;
+        navigate('Payment');
+      }, { once: true });
+    } else {
+      paymentProcessing = false;
+      setTimeout(() => navigate('Payment'), 380);
+    }
+  } catch (err) {
+    revertPaymentLocal(paymentId, snapshot);
+    hideOverlay();
+    paymentProcessing = false;
+    setPaymentLoading(paymentId, false);
+    showToast('Network error, try again', 'error');
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PAYMENT UI HELPERS
+════════════════════════════════════════════════════════════════════ */
+function paymentStatusBadge(p) {
+  const status = getPaymentStatus(p);
+  if (status === 'approved') return '<span class="badge badge-ok">Approved</span>';
+  if (status === 'rejected') return '<span class="badge badge-no">Rejected</span>';
+  return '<span class="badge badge-info">Pending</span>';
+}
+
+function paymentApprovalButtons(p) {
+  if (currentUser.role !== 'worker')          return '';
+  if (p.workerId !== currentUser.workerId)    return '';
+  if (getPaymentStatus(p) !== 'pending')      return '';
+  return `<div class="pay-action-row">
+    <button class="btn btn-primary btn-sm" data-pay-approve="${p.paymentId}"
+      onclick="event.stopPropagation();approvePayment('${p.paymentId}',this,event)">Approve</button>
+    <button class="btn btn-secondary btn-sm" data-pay-reject="${p.paymentId}"
+      onclick="event.stopPropagation();rejectPayment('${p.paymentId}',this,event)">Reject</button>
+  </div>`;
+}
+
+function paymentMeta(p) {
+  const status = getPaymentStatus(p);
+  if (status === 'approved') {
+    const d = p.approvedAt ? fmtDate(p.approvedAt) : '';
+    return d ? `<div class="xs dim mt1">Approved on: ${d}</div>` : '';
+  }
+  if (status === 'rejected') {
+    return p.workerMessage ? `<div class="xs mt1" style="color:var(--danger)">"${p.workerMessage}"</div>` : '';
+  }
+  return '';
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════════════════════════════ */
+function checkAuth() {
+  const saved = localStorage.getItem(STORAGE.auth);
+  if (saved) {
+    try { currentUser = JSON.parse(saved); showApp(); return; } catch {}
+  }
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appShell').classList.add('hidden');
+}
+
+function switchLoginTab(tab) {
+  document.getElementById('tabAdmin').classList.toggle('on',  tab === 'admin');
+  document.getElementById('tabWorker').classList.toggle('on', tab === 'worker');
+  document.getElementById('adminForm').classList.toggle('hidden',  tab !== 'admin');
+  document.getElementById('workerForm').classList.toggle('hidden', tab !== 'worker');
+  document.getElementById('adminErr').classList.add('hidden');
+  document.getElementById('workerErr').classList.add('hidden');
+}
+
+function handleAdminLogin(event) {
+  if (event) { const b = event.currentTarget; animateBtn(b, event); }
+  const id   = document.getElementById('adminId').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  if (id === ADMIN_ID && pass === ADMIN_PASS) {
+    currentUser = { role: 'admin' };
+    localStorage.setItem(STORAGE.auth, JSON.stringify(currentUser));
+    showApp();
+  } else {
+    const e = document.getElementById('adminErr');
+    e.textContent = 'Invalid credentials';
+    e.classList.remove('hidden');
+  }
+}
+
+async function handleWorkerLogin(event) {
+  if (event) { const b = event.currentTarget; animateBtn(b, event); }
+  const key = document.getElementById('secretKey').value.trim();
+  const err = document.getElementById('workerErr');
+  if (!key) { err.textContent = 'Enter secret key'; err.classList.remove('hidden'); return; }
+  showOverlay('Verifying...');
+  await loadWorkers();
+  hideOverlay();
+  const w = workers.find(x => x.secretKey === key);
+  if (w) {
+    currentUser = { role: 'worker', workerId: w.workerId, name: w.name };
+    localStorage.setItem(STORAGE.auth, JSON.stringify(currentUser));
+    showApp();
+  } else {
+    err.textContent = 'Invalid secret key';
+    err.classList.remove('hidden');
+  }
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem(STORAGE.auth);
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appShell').classList.add('hidden');
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   APP BOOT
+════════════════════════════════════════════════════════════════════ */
+async function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appShell').classList.remove('hidden');
+  document.getElementById('hdrUser').textContent = currentUser.role === 'admin'
+    ? 'ADMIN'
+    : (currentUser.name || currentUser.workerId || 'WORKER');
+
+  const homeEl = document.getElementById('pageHome');
+  homeEl.style.display = 'block';
+  homeEl.classList.add('active');
+  homeEl.innerHTML = `<div style="padding-top:4px">${skelStats()}${skelRows(4)}</div>`;
+
+  const wid = currentUser.role === 'worker' ? currentUser.workerId : undefined;
+  await Promise.all([loadWorkers(), loadAttendance(wid), loadPayments(wid)]);
+  navigate('Home');
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════════════════════════ */
+function navigate(page) {
+  paymentProcessing = false;
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+  document.querySelectorAll('.nav-item').forEach(b => {
+    const on = b.dataset.page === page;
+    b.classList.toggle('active', on);
+    const svg = b.querySelector('svg');
+    if (svg) svg.style.strokeWidth = on ? '2.4' : '1.8';
+  });
+  const el = document.getElementById('page' + page);
+  if (el) { el.style.display = 'block'; el.classList.add('active', 'anim'); el.innerHTML = ''; }
+  const R = {
+    Home:          renderHome,
+    Attendance:    renderAttendance,
+    Payment:       renderPayment,
+    Report:        renderReport,
+    Workers:       renderWorkers,
+    WorkerProfile: renderWorkerProfile,
+    AddDehari:     renderAddDehari,
+    AddPayment:    renderAddPayment,
+    AddWorker:     renderAddWorker
+  };
+  if (R[page]) R[page]();
+}
+
+function showSubPage(page, data) {
+  window._subData = data;
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+  const el = document.getElementById('page' + page);
+  if (el) { el.style.display = 'block'; el.classList.add('active', 'anim'); el.innerHTML = ''; }
+  const R = {
+    Workers:       renderWorkers,
+    WorkerProfile: renderWorkerProfile,
+    AddDehari:     renderAddDehari,
+    AddPayment:    renderAddPayment,
+    AddWorker:     renderAddWorker
+  };
+  if (R[page]) R[page]();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HOME
+════════════════════════════════════════════════════════════════════ */
+function renderHome() {
+  const el = document.getElementById('pageHome');
+  currentUser.role === 'admin' ? renderAdminHome(el) : renderWorkerHome(el);
+}
+
+function renderAdminHome(el) {
+  const todayStr    = today();
+  const month       = todayStr.substring(0, 7);
+  const presentToday = attendance.filter(a => a.date === todayStr && a.status === 'present');
+  const absentToday  = attendance.filter(a => a.date === todayStr && a.status === 'absent');
+  const monthAtt     = attendance.filter(a => a.date && a.date.startsWith(month));
+  const earnerMap    = {};
+  monthAtt.forEach(a => { earnerMap[a.workerId] = (earnerMap[a.workerId] || 0) + (Number(a.amount) || 0); });
+  const topEarners   = Object.entries(earnerMap).sort((a, b) => b[1] - a[1]).slice(0, 5)
+    .map(([id, amt]) => ({ name: workers.find(w => w.workerId === id)?.name || id, amount: amt }));
+  const monthTotal   = monthAtt.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+
+  el.innerHTML = `
+  <div style="padding-top:4px">
+    <div class="row jb mb2">
+      <div class="pg-hd" style="margin-bottom:0">Dashboard</div>
+      <span class="xs dim">${fmtDate(todayStr)}</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val col-p">${workers.length}</div><div class="stat-lbl">Workers</div></div>
+      <div class="stat-box"><div class="stat-val col-ok">${presentToday.length}</div><div class="stat-lbl">Present</div></div>
+      <div class="stat-box"><div class="stat-val col-no">${absentToday.length}</div><div class="stat-lbl">Absent</div></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-hd">Monthly Earnings — ${month}</div>
+      <canvas id="chartMain" height="160"></canvas>
+    </div>
+    <div class="card mb2">
+      <div class="row jb mb1">
+        <span class="sm bold">This Month</span>
+        <span class="sm bold col-ok">₹${monthTotal.toLocaleString()}</span>
+      </div>
+      ${topEarners.length ? topEarners.map((e, i) => `
+        <div class="row jb" style="padding:7px 0;border-top:1px solid var(--border)">
+          <span class="sm dim">${['🥇','🥈','🥉','④','⑤'][i]} ${e.name}</span>
+          <span class="sm bold col-ok">₹${e.amount.toLocaleString()}</span>
+        </div>`).join('') : '<div class="xs dim mt1">No attendance this month</div>'}
+    </div>
+    <button class="btn btn-primary" style="margin-top:4px" onclick="showSubPage('Workers')">Manage Workers →</button>
+  </div>`;
+  renderChart(month);
+}
+
+function renderWorkerHome(el) {
+  const wid   = currentUser.workerId;
+  const w     = workers.find(x => x.workerId === wid);
+  const myAtt = attendance.filter(a => a.workerId === wid);
+  const myPay = payments.filter(p => p.workerId === wid);
+  const earned = w?.salaryType === 'monthly'
+    ? (Number(w.monthlySalary) || 0)
+    : myAtt.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+  const paid      = myPay.reduce((s, p) => s + (Number(p.paidAmount) || 0), 0);
+  const todayR    = myAtt.find(a => a.date === today());
+  const pendingPay = myPay.filter(p => getPaymentStatus(p) === 'pending' && p.workerId === wid);
+
+  el.innerHTML = `
+  <div style="padding-top:4px">
+    <div class="pg-hd">Hi, ${currentUser.name || wid} 👋</div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val col-ok">₹${earned.toLocaleString()}</div><div class="stat-lbl">Earned</div></div>
+      <div class="stat-box"><div class="stat-val col-p">₹${paid.toLocaleString()}</div><div class="stat-lbl">Paid</div></div>
+      <div class="stat-box"><div class="stat-val col-no">₹${(earned - paid).toLocaleString()}</div><div class="stat-lbl">Pending</div></div>
+    </div>
+    ${pendingPay.length > 0 ? `
+    <div class="card mb2" style="border-color:rgba(59,130,246,.4)">
+      <div class="sm bold mb1" style="color:var(--accent)">⏳ Payments Awaiting Your Approval (${pendingPay.length})</div>
+      ${pendingPay.map(p => `
+        <div data-pay-card="${p.paymentId}" style="padding:10px 0;border-top:1px solid var(--border)">
+          <div class="row jb">
+            <span class="sm">${fmtDate(p.date)} · ${p.mode}</span>
+            <span class="sm bold col-ok">₹${(Number(p.paidAmount) || 0).toLocaleString()}</span>
+          </div>
+          ${p.note ? `<div class="xs dim mt1">${p.note}</div>` : ''}
+          <div class="pay-action-row">
+            <button class="btn btn-primary btn-sm" data-pay-approve="${p.paymentId}"
+              onclick="approvePayment('${p.paymentId}',this,event)">Approve</button>
+            <button class="btn btn-secondary btn-sm" data-pay-reject="${p.paymentId}"
+              onclick="rejectPayment('${p.paymentId}',this,event)">Reject</button>
+          </div>
+        </div>`).join('')}
+    </div>` : ''}
+    <div class="card mb2">
+      <div class="sm bold mb1">Today</div>
+      ${todayR
+        ? (todayR.status === 'absent'
+          ? '<span class="badge badge-no">Absent</span>'
+          : `<div class="row jb"><span class="sm">${todayR.dehari || 1} dehari</span><span class="badge badge-ok">Present</span></div>
+             <div class="xs dim mt1">Amount: ₹${(Number(todayR.amount) || 0).toLocaleString()}</div>`)
+        : '<div class="xs dim">No entry yet today</div>'}
+    </div>
+    <div class="sm bold mb1">Recent Attendance</div>
+    ${myAtt.length === 0 ? '<div class="empty">No records yet</div>' : myAtt.slice(-5).reverse().map(a => `
+      <div class="list-row">
+        <div>
+          <div class="lr-name">${fmtDate(a.date)}</div>
+          <div class="lr-sub">${a.status === 'absent'
+            ? '<span class="badge badge-no" style="font-size:10px">Absent</span>'
+            : (a.dehari || 1) + ' dehari' + (a.location ? ' · ' + a.location : '')}</div>
+        </div>
+        <span class="sm bold col-p">₹${(Number(a.amount) || 0).toLocaleString()}</span>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   CHART
+════════════════════════════════════════════════════════════════════ */
+function renderChart(month) {
+  const canvas = document.getElementById('chartMain');
+  if (!canvas) return;
+  const [yr, mo] = month.split('-').map(Number);
+  const days = new Date(yr, mo, 0).getDate();
+  const labels = [], totals = [];
+  for (let d = 1; d <= days; d++) {
+    const ds = month + '-' + String(d).padStart(2, '0');
+    labels.push(d);
+    totals.push(attendance.filter(a => a.date === ds).reduce((s, a) => s + (Number(a.amount) || 0), 0));
+  }
+  if (monthlyChart) monthlyChart.destroy();
+  monthlyChart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets: [{ data: totals, backgroundColor: 'rgba(59,130,246,.5)', borderColor: 'rgba(96,165,250,.9)', borderWidth: 1, borderRadius: 5, borderSkipped: false }] },
+    options: {
+      responsive: true,
+      animation: { duration: 900, easing: 'easeOutQuart' },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '₹' + ctx.raw.toLocaleString() } } },
+      scales: {
+        x: { ticks: { color: '#4a6070', font: { size: 9, family: 'DM Sans' } }, grid: { display: false } },
+        y: { ticks: { color: '#4a6070', font: { size: 9 }, callback: v => '₹' + v }, grid: { color: 'rgba(30,40,54,.8)' } }
+      }
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   WORKERS
+════════════════════════════════════════════════════════════════════ */
+function renderWorkers() {
+  const el = document.getElementById('pageWorkers');
+  el.innerHTML = `
+  <div>
+    <button class="back" onclick="navigate('Home')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back
+    </button>
+    <div class="row jb mb2">
+      <div class="pg-hd" style="margin-bottom:0">Workers <span class="col-p">(${workers.length})</span></div>
+      <button class="btn btn-primary btn-sm" onclick="showSubPage('AddWorker')">+ Add</button>
+    </div>
+    ${workers.length === 0 ? '<div class="empty">No workers yet. Add one!</div>'
+      : workers.map(w => `
+      <div class="list-row" onclick="showSubPage('WorkerProfile',{workerId:'${w.workerId}'})">
+        <div>
+          <div class="lr-name">${w.name}</div>
+          <div class="lr-sub">${w.workerId} · ${w.type} · ${w.salaryType === 'monthly' ? '₹' + w.monthlySalary + '/mo' : '₹' + w.dailyRate + '/day'}</div>
+        </div>
+        <span class="badge badge-info">${w.type}</span>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADD WORKER
+════════════════════════════════════════════════════════════════════ */
+function renderAddWorker() {
+  const el = document.getElementById('pageAddWorker');
+  el.innerHTML = `
+  <div>
+    <button class="back" onclick="showSubPage('Workers')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back
+    </button>
+    <div class="pg-hd">Add Worker</div>
+    <div class="card card-glow">
+      <div class="fg"><label>Salary Type</label>
+        <select class="inp" id="awSalaryType" onchange="awToggleSalary()">
+          <option value="daily">Daily Rate</option>
+          <option value="monthly">Monthly Salary</option>
+        </select>
+      </div>
+      <div class="fg"><label>Full Name</label><input class="inp" id="awName" placeholder="Worker name"></div>
+      <div class="fg"><label>Mobile</label><input class="inp" id="awMobile" type="tel" placeholder="10 digit number"></div>
+      <div class="fg"><label>Address</label><input class="inp" id="awAddress" placeholder="Home address"></div>
+      <div class="fg"><label>Type</label>
+        <div class="tabs">
+          <button class="tab on" onclick="awSetType(this,'labour')">Labour</button>
+          <button class="tab" onclick="awSetType(this,'karigar')">Karigar</button>
+        </div>
+        <input type="hidden" id="awType" value="labour">
+      </div>
+      <div class="fg" id="awDailyGrp"><label>Daily Rate (₹)</label><input class="inp" id="awRate" type="number" value="500"></div>
+      <div class="fg hidden" id="awMonthlyGrp"><label>Monthly Salary (₹)</label><input class="inp" id="awSalary" type="number" value="15000"></div>
+      <button class="btn btn-primary mt2" onclick="submitAddWorker(event)">Add Worker</button>
+      <div id="awErr" class="err-msg hidden"></div>
+      <div id="awOk" class="ok-msg hidden"></div>
+    </div>
+  </div>`;
+}
+
+function awSetType(btn, val) {
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('awType').value = val;
+}
+
+function awToggleSalary() {
+  const t = document.getElementById('awSalaryType').value;
+  document.getElementById('awDailyGrp').classList.toggle('hidden', t === 'monthly');
+  document.getElementById('awMonthlyGrp').classList.toggle('hidden', t === 'daily');
+}
+
+async function submitAddWorker(event) {
+  if (event) animateBtn(event.currentTarget, event);
+  const name         = document.getElementById('awName').value.trim();
+  const mobile       = document.getElementById('awMobile').value.trim();
+  const address      = document.getElementById('awAddress').value.trim();
+  const type         = document.getElementById('awType').value;
+  const salType      = document.getElementById('awSalaryType').value;
+  const dailyRate    = salType === 'daily'   ? (Number(document.getElementById('awRate').value)   || 500)  : 0;
+  const monthlySalary= salType === 'monthly' ? (Number(document.getElementById('awSalary').value) || 0)    : 0;
+
+  if (!name || !mobile) {
+    const e = document.getElementById('awErr');
+    e.textContent = 'Name and mobile required';
+    e.classList.remove('hidden');
+    return;
+  }
+
+  const w = {
+    workerId:      genId(),
+    name,
+    mobile,
+    address,
+    type,
+    salaryType:    salType,
+    dailyRate,
+    monthlySalary,
+    secretKey:     genId(),
+    joinDate:      today()
+  };
+
+  showOverlay('Adding Worker...');
+  await saveWorker(w);
+  hideOverlay();
+
+  document.getElementById('awErr').classList.add('hidden');
+  const ok = document.getElementById('awOk');
+  ok.textContent = '✓ Added! Secret Key: ' + w.secretKey;
+  ok.classList.remove('hidden');
+  showToast('Worker added! Key: ' + w.secretKey, 'info');
+  document.getElementById('awName').value   = '';
+  document.getElementById('awMobile').value = '';
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   WORKER PROFILE
+════════════════════════════════════════════════════════════════════ */
+function renderWorkerProfile() {
+  const el   = document.getElementById('pageWorkerProfile');
+  const data = window._subData || {};
+  const w    = workers.find(x => x.workerId === data.workerId);
+  if (!w) { el.innerHTML = '<div class="empty">Worker not found</div>'; return; }
+
+  const wAtt   = attendance.filter(a => a.workerId === w.workerId);
+  const wPay   = payments.filter(p => p.workerId === w.workerId);
+  const earned = w.salaryType === 'monthly'
+    ? (Number(w.monthlySalary) || 0)
+    : wAtt.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+  const paid = wPay.reduce((s, p) => s + (Number(p.paidAmount) || 0), 0);
+
+  el.innerHTML = `
+  <div>
+    <button class="back" onclick="showSubPage('Workers')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back
+    </button>
+    <div class="card card-glow mb2">
+      <div class="bold" style="font-size:18px;letter-spacing:-.3px">${w.name}</div>
+      <div class="xs dim mt1">${w.workerId} · ${w.type}</div>
+      <div class="xs dim">${w.salaryType === 'monthly' ? '₹' + w.monthlySalary + '/month' : '₹' + w.dailyRate + '/day'}</div>
+      <div class="xs dim">📱 ${w.mobile} · Joined ${fmtDate(w.joinDate)}</div>
+      <div class="xs mt2" style="color:var(--warning);font-family:'JetBrains Mono',monospace">🔑 ${w.secretKey}</div>
+    </div>
+    <div class="stat-row mb2">
+      <div class="stat-box"><div class="stat-val col-ok">₹${earned.toLocaleString()}</div><div class="stat-lbl">Earned</div></div>
+      <div class="stat-box"><div class="stat-val col-p">₹${paid.toLocaleString()}</div><div class="stat-lbl">Paid</div></div>
+      <div class="stat-box"><div class="stat-val col-no">₹${(earned - paid).toLocaleString()}</div><div class="stat-lbl">Pending</div></div>
+    </div>
+    <div class="sm bold mb1">Attendance</div>
+    ${wAtt.length === 0 ? '<div class="empty" style="padding:24px">No records</div>'
+      : wAtt.slice().reverse().map(a => `
+      <div class="list-row">
+        <div>
+          <div class="lr-name">${fmtDate(a.date)}</div>
+          <div class="lr-sub">${a.status === 'absent'
+            ? '<span class="badge badge-no" style="font-size:10px">Absent</span>'
+            : (a.dehari || 1) + ' dehari' + (a.time ? ' · ' + a.time : '') + (a.location ? ' · ' + a.location : '')}</div>
+        </div>
+        <span class="sm bold col-p">₹${(Number(a.amount) || 0).toLocaleString()}</span>
+      </div>`).join('')}
+    <div class="sm bold mb1 mt2">Payments</div>
+    ${wPay.length === 0 ? '<div class="empty" style="padding:24px">No payments</div>'
+      : wPay.slice().reverse().map(p => `
+      <div class="list-row" style="flex-direction:column;align-items:flex-start">
+        <div class="row jb" style="width:100%">
+          <div>
+            <div class="lr-name">${fmtDate(p.date)}</div>
+            <div class="lr-sub">${p.mode}${p.note ? ' · ' + p.note : ''}</div>
+          </div>
+          <div style="text-align:right">
+            <span class="sm bold col-ok">₹${(Number(p.paidAmount) || 0).toLocaleString()}</span>
+            <div class="mt1">${paymentStatusBadge(p)}</div>
+          </div>
+        </div>
+        ${paymentMeta(p)}
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADD DEHARI
+════════════════════════════════════════════════════════════════════ */
+function renderAddDehari() {
+  const el       = document.getElementById('pageAddDehari');
+  const preWid   = currentUser.role === 'worker' ? currentUser.workerId : (window._subData?.workerId || '');
+  const w        = workers.find(x => x.workerId === preWid);
+  const isM      = w?.salaryType === 'monthly';
+  const backDest = currentUser.role === 'worker' ? 'Home' : 'Attendance';
+
+  el.innerHTML = `
+  <div style="padding-bottom:160px">
+    <button class="back" onclick="navigate('${backDest}')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back
+    </button>
+    <div class="pg-hd">Add Dehari</div>
+    <div class="card card-glow">
+      <div class="fg"><label>Date</label><input class="inp" id="adDate" type="date" value="${today()}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px">In Time</label>
+          <input class="inp" id="adInTime" type="time" value="09:00" oninput="adAutoDehariFromRange()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px">Out Time</label>
+          <input class="inp" id="adOutTime" type="time" oninput="adAutoDehariFromRange()">
+        </div>
+      </div>
+      ${currentUser.role === 'admin' ? `
+      <div class="fg"><label>Worker</label>
+        <select class="inp" id="adWorker" onchange="adWorkerChange()">
+          <option value="">— Select Worker —</option>
+          ${workers.map(x => `<option value="${x.workerId}" ${x.workerId === preWid ? 'selected' : ''}>${x.name} · ${x.salaryType === 'monthly' ? 'Monthly' : '₹' + x.dailyRate + '/day'}</option>`).join('')}
+        </select>
+      </div>` : `<input type="hidden" id="adWorker" value="${preWid}">`}
+      <div id="adDehariSection" class="${isM ? 'hidden' : ''}">
+        <div class="dehari-live" id="adLiveDisplay">
+          <div>
+            <div class="dehari-live-val" id="adDehDisplay">1</div>
+            <div class="dehari-live-lbl">Dehari</div>
+          </div>
+          <div style="text-align:right">
+            <div class="dehari-live-amt" id="adAmtDisplay">₹0</div>
+            <div class="dehari-live-lbl">Amount</div>
+          </div>
+        </div>
+        <div class="fg"><label>Override Dehari</label>
+          <input class="inp" id="adDehari" type="number" step="0.5" min="0.5" max="3" value="1" oninput="adCalc()">
+        </div>
+      </div>
+      ${isM ? `<div class="xs dim tc mt2" style="padding:10px;background:var(--surface2);border-radius:8px">Monthly salary — dehari not applicable</div>` : ''}
+      <div class="fg mt1"><label>Location (manual)</label><input class="inp" id="adLocation" placeholder="Site name / area"></div>
+      <div id="adErr" class="err-msg hidden"></div>
+    </div>
+  </div>
+
+  <div class="fab-bar">
+    <button class="fab-btn fab-red" onclick="markAbsent()">
+      <div class="fab-circle">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <span class="fab-lbl">Absent</span>
+    </button>
+    <button class="fab-btn fab-blue" onclick="submitDehari()">
+      <div class="fab-circle fab-circle-lg">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <span class="fab-lbl">Submit</span>
+    </button>
+    <button class="fab-btn fab-gray" onclick="navigate('${backDest}')">
+      <div class="fab-circle">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="fab-lbl">Cancel</span>
+    </button>
+  </div>`;
+}
+
+function adAutoDehariFromRange() {
+  const i = document.getElementById('adInTime').value;
+  const o = document.getElementById('adOutTime').value;
+  if (!i || !o) return;
+  const [ih] = i.split(':').map(Number);
+  const [oh] = o.split(':').map(Number);
+  let outH = oh;
+  if (oh <= ih) outH = oh + 24;
+  let d = 1;
+  if (ih === 9) {
+    if (outH >= 17 && outH < 21)       d = 1;
+    else if (outH >= 21 && outH < 24)  d = 1.5;
+    else if (outH >= 24 && outH < 27)  d = 2;
+    else if (outH >= 27)               d = 2.5;
+  } else if (ih === 12) {
+    if (outH >= 17 && outH < 21)       d = 0.5;
+    else if (outH >= 21 && outH < 24)  d = 1;
+    else if (outH >= 24 && outH < 27)  d = 1.5;
+    else if (outH >= 27)               d = 2;
+  } else if (ih === 17) {
+    if (outH >= 21 && outH < 24)       d = 0.5;
+    else if (outH >= 24 && outH < 27)  d = 1;
+    else if (outH >= 27)               d = 1.5;
+  } else {
+    const diff = outH - ih;
+    if (diff < 4)        d = 0.5;
+    else if (diff < 8)   d = 1;
+    else if (diff < 12)  d = 1.5;
+    else if (diff < 16)  d = 2;
+    else                 d = 2.5;
+  }
+  const inp = document.getElementById('adDehari');
+  if (inp) inp.value = d;
+  adCalc();
+}
+
+function adWorkerChange() {
+  const wid = document.getElementById('adWorker').value;
+  const w   = workers.find(x => x.workerId === wid);
+  const isM = w?.salaryType === 'monthly';
+  const sec = document.getElementById('adDehariSection');
+  if (sec) sec.classList.toggle('hidden', isM);
+  adCalc();
+}
+
+function adCalc() {
+  const dehari = parseFloat(document.getElementById('adDehari')?.value || 1) || 1;
+  const wid    = document.getElementById('adWorker')?.value || '';
+  const w      = workers.find(x => x.workerId === wid);
+  const rate   = (w && w.salaryType === 'daily') ? (Number(w.dailyRate) || 0) : 0;
+  const dEl    = document.getElementById('adDehDisplay');
+  const aEl    = document.getElementById('adAmtDisplay');
+  if (dEl) dEl.innerHTML = dehari + ' dehari';
+  if (aEl) aEl.textContent = '₹' + (rate * dehari).toLocaleString();
+}
+
+async function submitDehari() {
+  showOverlay('Saving...');
+  const wid = document.getElementById('adWorker').value;
+  const w   = workers.find(x => x.workerId === wid);
+  if (!wid || !w) {
+    hideOverlay();
+    const e = document.getElementById('adErr');
+    e.textContent = 'Please select a worker';
+    e.classList.remove('hidden');
+    return;
+  }
+  const dehari     = parseFloat(document.getElementById('adDehari')?.value || 1) || 1;
+  const adDate     = document.getElementById('adDate').value;
+  const adInTime   = document.getElementById('adInTime').value;
+  const adOutTime  = document.getElementById('adOutTime').value;
+  const adLocation = document.getElementById('adLocation').value || '';
+  const rec = {
+    date:     adDate,
+    time:     adInTime + ' - ' + adOutTime,
+    workerId: wid,
+    dehari:   dehari,
+    amount:   w.salaryType === 'monthly' ? 0 : (Number(w.dailyRate) * dehari),
+    location: adLocation,
+    status:   'present'
+  };
+  await saveAttendance(rec);
+  hideOverlay();
+  showToast('Dehari Saved', 'success');
+  setTimeout(() => navigate(currentUser.role === 'worker' ? 'Home' : 'Attendance'), 800);
+}
+
+async function markAbsent() {
+  const wid = document.getElementById('adWorker').value;
+  if (!wid) {
+    const e = document.getElementById('adErr');
+    e.textContent = 'Please select a worker';
+    e.classList.remove('hidden');
+    return;
+  }
+  showOverlay('Marking Absent...');
+ 
+ const rec = { date: today(), workerId: wid, status: 'absent', amount: 0, dehari: 0, time: '', location: '' };
+  await saveAttendance(rec);
+  hideOverlay();
+  showToast('Marked Absent', 'error');
+  setTimeout(() => navigate(currentUser.role === 'worker' ? 'Home' : 'Attendance'), 800);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ATTENDANCE PAGE
+════════════════════════════════════════════════════════════════════ */
+function renderAttendance() {
+  const el   = document.getElementById('pageAttendance');
+  const isA  = currentUser.role === 'admin';
+  const wid  = isA ? undefined : currentUser.workerId;
+  const data = (wid ? attendance.filter(a => a.workerId === wid) : attendance).slice().reverse();
+  el.innerHTML = `
+  <div>
+    <div class="pg-hd">Attendance</div>
+    ${data.length === 0 ? '<div class="empty">No records yet</div>'
+      : data.map(a => {
+          const w = workers.find(x => x.workerId === a.workerId);
+          return `<div class="list-row">
+            <div>
+              <div class="lr-name">${w ? w.name : a.workerId}</div>
+              <div class="lr-sub">${fmtDate(a.date)} · ${a.status === 'absent'
+                ? '<span class="badge badge-no" style="font-size:10px">Absent</span>'
+                : (a.dehari || 1) + ' dehari' + (a.time ? ' · ' + a.time : '') + (a.location ? ' · ' + a.location : '')}</div>
+            </div>
+            <span class="sm bold col-p">₹${(Number(a.amount) || 0).toLocaleString()}</span>
+          </div>`;
+        }).join('')}
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PAYMENT PAGE
+════════════════════════════════════════════════════════════════════ */
+function renderPayment() {
+  const el   = document.getElementById('pagePayment');
+  const isA  = currentUser.role === 'admin';
+  const wid  = isA ? undefined : currentUser.workerId;
+  const payD = wid ? payments.filter(p => p.workerId === wid) : payments;
+  const attD = wid ? attendance.filter(a => a.workerId === wid) : attendance;
+  const earned = attD.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+  const paid   = payD.reduce((s, p) => s + (Number(p.paidAmount) || 0), 0);
+
+  el.innerHTML = `
+  <div>
+    <div class="pg-hd">Payments</div>
+    <div class="stat-row mb2">
+      <div class="stat-box"><div class="stat-val col-ok">₹${earned.toLocaleString()}</div><div class="stat-lbl">Earned</div></div>
+      <div class="stat-box"><div class="stat-val col-p">₹${paid.toLocaleString()}</div><div class="stat-lbl">Paid</div></div>
+      <div class="stat-box"><div class="stat-val col-no">₹${(earned - paid).toLocaleString()}</div><div class="stat-lbl">Pending</div></div>
+    </div>
+    ${payD.length === 0 ? '<div class="empty">No payments yet</div>'
+      : payD.slice().reverse().map(p => {
+          const w = workers.find(x => x.workerId === p.workerId);
+          return `<div class="list-row" data-pay-card="${p.paymentId}" style="flex-direction:column;align-items:flex-start">
+            <div class="row jb" style="width:100%">
+              <div>
+                <div class="lr-name">${w ? w.name : p.workerId}</div>
+                <div class="lr-sub">${fmtDate(p.date)} · ${p.mode}${p.note ? ' · ' + p.note : ''}</div>
+              </div>
+              <div style="text-align:right">
+                <span class="sm bold col-ok">₹${(Number(p.paidAmount) || 0).toLocaleString()}</span>
+                <div class="mt1">${paymentStatusBadge(p)}</div>
+              </div>
+            </div>
+            ${paymentMeta(p)}
+            ${paymentApprovalButtons(p)}
+          </div>`;
+        }).join('')}
+    ${isA ? `<div style="height:70px"></div>
+      <button class="btn btn-primary" style="position:fixed;bottom:calc(var(--nav-h)+14px);left:16px;right:16px;width:auto;z-index:150"
+        onclick="showSubPage('AddPayment')">+ Add Payment</button>` : ''}
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADD PAYMENT
+════════════════════════════════════════════════════════════════════ */
+function renderAddPayment() {
+  const el = document.getElementById('pageAddPayment');
+  el.innerHTML = `
+  <div>
+    <button class="back" onclick="navigate('Payment')">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back
+    </button>
+    <div class="pg-hd">Add Payment</div>
+    <div class="card card-glow">
+      <div class="fg"><label>Worker</label>
+        <select class="inp" id="apWorker">
+          <option value="">— Select Worker —</option>
+          ${workers.map(w => `<option value="${w.workerId}">${w.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label>Amount (₹)</label><input class="inp" id="apAmount" type="number" placeholder="0"></div>
+      <div class="fg"><label>Payment Mode</label>
+        <div class="tabs" id="apModeTabs">
+          <button class="tab on" onclick="apMode(this,'Cash')">Cash</button>
+          <button class="tab" onclick="apMode(this,'UPI')">UPI</button>
+          <button class="tab" onclick="apMode(this,'Bank')">Bank</button>
+        </div>
+        <input type="hidden" id="apMode" value="Cash">
+      </div>
+      <div class="fg"><label>Note (optional)</label><input class="inp" id="apNote" placeholder="Reason / reference"></div>
+      <button class="btn btn-primary mt2" onclick="submitPayment(event)">Record Payment</button>
+      <div id="apErr" class="err-msg hidden"></div>
+    </div>
+  </div>`;
+}
+
+function apMode(btn, val) {
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('apMode').value = val;
+}
+
+async function submitPayment(event) {
+  if (event) animateBtn(event.currentTarget, event);
+  const wid = document.getElementById('apWorker').value;
+  const amt = Number(document.getElementById('apAmount').value);
+  if (!wid || !amt) {
+    const e = document.getElementById('apErr');
+    e.textContent = 'Select worker and enter amount';
+    e.classList.remove('hidden');
+    return;
+  }
+  const rec = {
+    paymentId:     genPayId(),
+    date:          today(),
+    workerId:      wid,
+    paidAmount:    amt,
+    mode:          document.getElementById('apMode').value,
+    note:          document.getElementById('apNote').value.trim(),
+    status:        'pending',
+    workerMessage: '',
+    approvedAt:    ''
+  };
+  showOverlay('Recording Payment...');
+  await savePayment(rec);
+  hideOverlay();
+  showToast('Payment recorded!', 'success');
+  setTimeout(() => navigate('Payment'), 800);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   REPORT PAGE
+════════════════════════════════════════════════════════════════════ */
+function renderReport() {
+  const el  = document.getElementById('pageReport');
+  const isA = currentUser.role === 'admin';
+  el.innerHTML = `
+  <div>
+    <div class="pg-hd">Reports</div>
+    ${isA ? `<div class="card card-glow mb2">
+      <div class="sm bold mb2">📊 Monthly All-Workers PDF</div>
+      <div class="fg"><label>Month</label><input class="inp" id="rpMonth" type="month" value="${today().substring(0, 7)}"></div>
+      <button class="btn btn-primary" onclick="genMonthlyPDF(event)">Download Monthly PDF</button>
+    </div>` : ''}
+    <div class="card card-glow">
+      <div class="sm bold mb2">👤 ${isA ? 'Single Worker PDF' : 'My Report PDF'}</div>
+      ${isA ? `<div class="fg"><label>Worker</label>
+        <select class="inp" id="rpWorker">${workers.map(w => `<option value="${w.workerId}">${w.name}</option>`).join('')}</select>
+      </div>` : `<input type="hidden" id="rpWorker" value="${currentUser.workerId}">`}
+      <button class="btn btn-secondary" onclick="genWorkerPDF(event)">Download Worker PDF</button>
+    </div>
+  </div>`;
+}
+
+function genMonthlyPDF(event) {
+  if (event) animateBtn(event.currentTarget, event);
+  const { jsPDF } = window.jspdf;
+  const doc   = new jsPDF();
+  const month = document.getElementById('rpMonth').value;
+  doc.setFontSize(18); doc.setFont(undefined, 'bold');
+  doc.text('Chandan Ji Team — Monthly Report', 14, 20);
+  doc.setFontSize(11); doc.setFont(undefined, 'normal');
+  doc.text('Month: ' + month, 14, 30);
+  let y = 42;
+  workers.forEach(w => {
+    if (y > 262) { doc.addPage(); y = 20; }
+    const wAtt   = attendance.filter(a => a.workerId === w.workerId && a.date && a.date.startsWith(month));
+    const wPay   = payments.filter(p => p.workerId === w.workerId && p.date && p.date.startsWith(month));
+    const earned = w.salaryType === 'monthly' ? (Number(w.monthlySalary) || 0) : wAtt.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+    const paid   = wPay.reduce((s, p) => s + (Number(p.paidAmount) || 0), 0);
+    doc.setFontSize(12); doc.setFont(undefined, 'bold');
+    doc.text(w.name + ' (' + w.workerId + ')', 14, y); y += 6;
+    doc.setFontSize(10); doc.setFont(undefined, 'normal');
+    doc.text('Days: ' + wAtt.filter(a => a.status === 'present').length +
+      '  |  Earned: Rs.' + earned + '  |  Paid: Rs.' + paid + '  |  Pending: Rs.' + (earned - paid), 14, y);
+    y += 12;
+  });
+  doc.save('monthly-report-' + month + '.pdf');
+}
+
+function genWorkerPDF(event) {
+  if (event) animateBtn(event.currentTarget, event);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const wid = document.getElementById('rpWorker').value;
+  const w   = workers.find(x => x.workerId === wid);
+  if (!w) { showToast('Select a worker', 'error'); return; }
+
+  const wAtt   = attendance.filter(a => a.workerId === wid);
+  const wPay   = payments.filter(p => p.workerId === wid);
+  const earned = w.salaryType === 'monthly' ? (Number(w.monthlySalary) || 0) : wAtt.reduce((s, a) => s + (Number(a.amount) || 0), 0);
+  const paid   = wPay.reduce((s, p) => s + (Number(p.paidAmount) || 0), 0);
+
+  doc.setFontSize(18); doc.setFont(undefined, 'bold');
+  doc.text('Worker Report — ' + w.name, 14, 18);
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text('ID: ' + w.workerId + '  |  Type: ' + w.type + '  |  ' +
+    (w.salaryType === 'monthly' ? 'Monthly: Rs.' + w.monthlySalary : 'Daily: Rs.' + w.dailyRate + '/day'), 14, 27);
+  doc.text('Total Earned: Rs.' + earned + '  |  Paid: Rs.' + paid + '  |  Pending: Rs.' + (earned - paid), 14, 34);
+
+  const attRows = wAtt.map(a => [
+    fmtDate(a.date),
+    a.time || '-',
+    a.status === 'absent' ? 'ABSENT' : 'Present',
+    a.status === 'absent' ? '-' : String(a.dehari || 1),
+    a.status === 'absent' ? '0' : 'Rs.' + (Number(a.amount) || 0)
+  ]);
+
+  doc.autoTable({
+    startY: 42,
+    head: [['Date', 'Time', 'Status', 'Dehari', 'Amount']],
+    body: attRows,
+    styles: { fontSize: 8, cellPadding: 3, font: 'helvetica' },
+    headStyles: { fillColor: [59, 130, 246], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [242, 247, 255] },
+    didParseCell(data) {
+      if (data.section === 'body' && data.row.raw[2] === 'ABSENT') {
+        data.cell.styles.textColor = [220, 38, 38];
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+    columnStyles: { 0: { cellWidth: 28 }, 1: { cellWidth: 34 }, 2: { cellWidth: 22 }, 3: { cellWidth: 16 }, 4: { cellWidth: 'auto' } }
+  });
+
+  let y2 = doc.lastAutoTable.finalY + 12;
+  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.text('Payment Records', 14, y2); y2 += 6;
+
+  const payRows = wPay.map(p => [
+    fmtDate(p.date),
+    'Rs.' + (Number(p.paidAmount) || 0),
+    p.mode,
+    p.note || '-',
+    getPaymentStatus(p)
+  ]);
+
+  doc.autoTable({
+    startY: y2,
+    head: [['Date', 'Amount', 'Mode', 'Note', 'Status']],
+    body: payRows,
+    styles: { fontSize: 8, cellPadding: 3 },
+    headStyles: { fillColor: [34, 197, 94], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [242, 255, 248] }
+  });
+
+  doc.save('worker-' + w.name + '.pdf');
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════════════════════════════ */
+checkAuth();
+</script>
+</body>
+</html>
