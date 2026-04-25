@@ -1,8 +1,8 @@
 {
   "name": "Chandan Ji Team",
   "short_name": "CJT",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/C.J.T/index.html",
+  "scope": "/C.J.T/",
   "display": "standalone",
   "background_color": "#0a0e14",
   "theme_color": "#4A90D9",
