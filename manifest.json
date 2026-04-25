@@ -1,0 +1,21 @@
+{
+  "name": "C.J.T",
+  "short_name": "CJT",
+  "start_url": "/C.J.T/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4A90D9",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/p6fW443Z/dc2de87447d9.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/wrZTHY38/ac75e96cf1c2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
