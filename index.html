@@ -268,6 +268,9 @@ select.inp option{background:var(--surface2);color:var(--text)}
 #installBtn:active{
   transform:scale(.95);
 }
+#installBtn{
+  display:none;
+}
 </style>
 </head>
 <body>
@@ -1641,26 +1644,41 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/C.J.T/service-worker.js');
   });
 }
-let deferredPrompt;
+let deferredPrompt = null;
 
+// install event
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  document.getElementById('installBtn').style.display = 'block';
+
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'block';
 });
 
-document.getElementById('installBtn').addEventListener('click', async () => {
-  if (!deferredPrompt) return;
+// button click (SAFE)
+document.addEventListener('click', async (e) => {
+  if (e.target.id === 'installBtn') {
 
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
+    if (!deferredPrompt) {
+      showToast('Install not ready', 'error');
+      return;
+    }
 
-  if (outcome === 'accepted') {
-    showToast('App Installed', 'success');
+    deferredPrompt.prompt();
+
+    const choice = await deferredPrompt.userChoice;
+
+    if (choice.outcome === 'accepted') {
+      showToast('App Installed', 'success');
+    } else {
+      showToast('Install Cancelled', 'error');
+    }
+
+    deferredPrompt = null;
+
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'none';
   }
-
-  deferredPrompt = null;
-  document.getElementById('installBtn').style.display = 'none';
 });
 </script>
 
