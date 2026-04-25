@@ -252,6 +252,22 @@ select.inp option{background:var(--surface2);color:var(--text)}
 
 .pay-action-row{display:flex;gap:8px;margin-top:10px}
 .pay-card-resolving{animation:payCardResolve .42s ease forwards;pointer-events:none}
+#installBtn{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(135deg,#3b82f6,#818cf8);
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(59,130,246,.4);
+  transition:.2s;
+}
+
+#installBtn:active{
+  transform:scale(.95);
+}
 </style>
 </head>
 <body>
@@ -297,6 +313,7 @@ select.inp option{background:var(--surface2);color:var(--text)}
     </div>
     <div class="hdr-right">
       <div class="hdr-user" id="hdrUser"></div>
+      <button id="installBtn">Install</button>
       <button class="logout-btn" onclick="logout()">
         <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
@@ -1624,22 +1641,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/C.J.T/service-worker.js');
   });
 }
-</script>
-<button id="installBtn" style="
-position:fixed;
-top:70px;
-right:14px;
-z-index:9999;
-padding:10px 14px;
-border:none;
-border-radius:8px;
-background:#3b82f6;
-color:#fff;
-font-weight:700;
-display:none;">
-Install App
-</button>
-<script>
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -1648,14 +1649,20 @@ window.addEventListener('beforeinstallprompt', (e) => {
   document.getElementById('installBtn').style.display = 'block';
 });
 
-document.getElementById('installBtn').addEventListener('click', () => {
+document.getElementById('installBtn').addEventListener('click', async () => {
   if (!deferredPrompt) return;
+
   deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => {
-    deferredPrompt = null;
-    document.getElementById('installBtn').style.display = 'none';
-  });
+  const { outcome } = await deferredPrompt.userChoice;
+
+  if (outcome === 'accepted') {
+    showToast('App Installed', 'success');
+  }
+
+  deferredPrompt = null;
+  document.getElementById('installBtn').style.display = 'none';
 });
 </script>
+
 </body>
 </html>
