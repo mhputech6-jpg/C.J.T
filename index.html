@@ -1643,50 +1643,47 @@ checkAuth();
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js');
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./service-worker.js');
+      console.log('SW OK', reg);
+    } catch (err) {
+      console.error('SW FAIL', err);
+    }
   });
 }
+
 let deferredPrompt = null;
-document.getElementById('installBtnLogin').style.display = 'block';
-// install event
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
 
   const btn1 = document.getElementById('installBtn');
-const btn2 = document.getElementById('installBtnLogin');
+  const btn2 = document.getElementById('installBtnLogin');
 
-if (btn1) btn1.style.display = 'block';
-if (btn2) btn2.style.display = 'block';
+  if (btn1) btn1.style.display = 'block';
+  if (btn2) btn2.style.display = 'block';
 });
 
-// button click (SAFE)
 document.addEventListener('click', async (e) => {
   if (
-  e.target.id === 'installBtn' ||
-  e.target.id === 'installBtnLogin'
-) {
-
+    e.target.id === 'installBtn' ||
+    e.target.id === 'installBtnLogin'
+  ) {
     if (!deferredPrompt) {
       showToast('Install not ready', 'error');
       return;
     }
 
     deferredPrompt.prompt();
-
     const choice = await deferredPrompt.userChoice;
 
     if (choice.outcome === 'accepted') {
       showToast('App Installed', 'success');
-    } else {
-      showToast('Install Cancelled', 'error');
     }
 
     deferredPrompt = null;
-
-    const btn = document.getElementById('installBtn');
-    if (btn) btn.style.display = 'none';
   }
 });
 </script>
