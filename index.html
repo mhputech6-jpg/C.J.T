@@ -301,6 +301,9 @@ select.inp option{background:var(--surface2);color:var(--text)}
       <div class="fg"><label>Secret Key</label><input class="inp" id="secretKey" placeholder="WK-XXXXX" autocomplete="off"></div>
       <button class="btn btn-primary" onclick="handleWorkerLogin(event)">Login as Worker</button>
       <div id="workerErr" class="err-msg hidden"></div>
+      <button id="installBtnLogin" class="btn btn-primary mt2" style="display:none">
+Install App
+</button>
     </div>
   </div>
 </div>
@@ -1651,13 +1654,19 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
 
-  const btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = 'block';
+  const btn1 = document.getElementById('installBtn');
+const btn2 = document.getElementById('installBtnLogin');
+
+if (btn1) btn1.style.display = 'block';
+if (btn2) btn2.style.display = 'block';
 });
 
 // button click (SAFE)
 document.addEventListener('click', async (e) => {
-  if (e.target.id === 'installBtn') {
+  if (
+  e.target.id === 'installBtn' ||
+  e.target.id === 'installBtnLogin'
+) {
 
     if (!deferredPrompt) {
       showToast('Install not ready', 'error');
