@@ -271,12 +271,95 @@ select.inp option{background:var(--surface2);color:var(--text)}
 #installBtn{
   display:none;
 }
+
+#installBanner{
+  display:none;
+  width:100%;
+  max-width:980px;
+  margin:0 auto 24px;
+}
+
+.install-box{
+  background:rgba(20,28,40,.95);
+  border:1px solid rgba(96,165,250,.45);
+  border-radius:22px;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 0 30px rgba(59,130,246,.18);
+}
+
+.install-icon{
+  width:72px;
+  height:72px;
+  border-radius:18px;
+}
+
+.install-content{
+  flex:1;
+}
+
+.install-title{
+  font-size:15px;
+  font-weight:800;
+}
+
+.install-text{
+  font-size:12px;
+  color:#a7b4c7;
+  margin-top:4px;
+}
+
+.install-btn{
+  border:none;
+  padding:14px 34px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#3b82f6,#4f8cff);
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.install-close{
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:34px;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
 
 <!-- ═══════════════════════════ LOGIN SCREEN ═══════════════════════════ -->
 <div id="loginScreen" class="login-shell">
+<div id="installBanner">
+  <div class="install-box">
+
+    <img src="/C.J.T/icon-192.png" class="install-icon">
+
+    <div class="install-content">
+      <div class="install-title">
+        Install CHANDAN JI TEAM
+      </div>
+
+      <div class="install-text">
+        Install this app for quick access and better experience
+      </div>
+    </div>
+
+    <button id="installNowBtn" class="install-btn">
+      Install
+    </button>
+
+    <button id="closeInstallBanner" class="install-close">
+      ×
+    </button>
+
+  </div>
+</div>
   <div class="login-brand">
     <div class="login-ico">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
@@ -1653,8 +1736,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
   const btn = document.getElementById('installBtn');
   if (btn) btn.style.display = 'block';
-});
 
+  const banner = document.getElementById('installBanner');
+  if (banner) banner.style.display = 'block';
+});
 // button click (SAFE)
 document.addEventListener('click', async (e) => {
   if (e.target.id === 'installBtn') {
@@ -1679,6 +1764,27 @@ document.addEventListener('click', async (e) => {
     const btn = document.getElementById('installBtn');
     if (btn) btn.style.display = 'none';
   }
+});
+document.addEventListener('click', async (e) => {
+
+  if(e.target.id === 'closeInstallBanner'){
+    document.getElementById('installBanner').style.display = 'none';
+  }
+
+  if(e.target.id === 'installNowBtn' && deferredPrompt){
+
+    deferredPrompt.prompt();
+
+    const result = await deferredPrompt.userChoice;
+
+    if(result.outcome === 'accepted'){
+      showToast('App Installed','success');
+    }
+
+    deferredPrompt = null;
+    document.getElementById('installBanner').style.display = 'none';
+  }
+
 });
 </script>
 
