@@ -1,26 +1,48 @@
-const CACHE = "cjt-v2";
+const CACHE = "cjt-v3";
 
 const URLS = [
-  "/C.J.T/",
-  "/C.J.T/index.html",
-  "/C.J.T/manifest.json",
-  "/C.J.T/icon-192.png",
-  "/C.J.T/icon-512.png"
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
-self.addEventListener("install", e => {
+self.addEventListener("install", (event) => {
   self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(URLS))
+
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => {
+      return cache.addAll(URLS);
+    })
   );
 });
 
-self.addEventListener("activate", e => {
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE)
+          .map((key) => caches.delete(key))
+      )
+    )
+  );
+
   self.clients.claim();
 });
 
-self.addEventListener("fetch", e => {
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return (
+        cached ||
+        fetch(event.request).then((response) => {
+          return response;
+        })
+      );
+    })
   );
 });
