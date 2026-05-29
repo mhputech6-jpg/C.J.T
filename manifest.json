@@ -1,21 +1,22 @@
 {
-  "name": "Chandan Ji Team",
-  "short_name": "CJT",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#0a0e14",
-  "theme_color": "#4A90D9",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+"name": "Chandan Ji Team",
+"short_name": "CJT",
+"start_url": "/C.J.T/index.html",
+"scope": "/C.J.T/",
+"display": "standalone",
+"background_color": "#0a0e14",
+"theme_color": "#4A90D9",
+"icons": [
+{
+"src": "/C.J.T/icon-192.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "/C.J.T/icon-512.png",
+"sizes": "512x512",
+"type": "image/png"
 }
+]
+}
+
