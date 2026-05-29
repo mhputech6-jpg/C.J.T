@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
- <link rel="apple-touch-icon" href="icon-192.png">
+ <link rel="apple-touch-icon" href="/C.J.T/icon-192.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
- <link rel="manifest" href="manifest.json">
+ <link rel="manifest" href="/C.J.T/manifest.json">
 <meta name="theme-color" content="#4A90D9">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -301,9 +301,6 @@ select.inp option{background:var(--surface2);color:var(--text)}
       <div class="fg"><label>Secret Key</label><input class="inp" id="secretKey" placeholder="WK-XXXXX" autocomplete="off"></div>
       <button class="btn btn-primary" onclick="handleWorkerLogin(event)">Login as Worker</button>
       <div id="workerErr" class="err-msg hidden"></div>
-      <button id="installBtnLogin" class="btn btn-primary mt2" style="display:none">
-Install App
-</button>
     </div>
   </div>
 </div>
@@ -1643,47 +1640,44 @@ checkAuth();
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('./service-worker.js');
-      console.log('SW OK', reg);
-    } catch (err) {
-      console.error('SW FAIL', err);
-    }
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/C.J.T/service-worker.js');
   });
 }
-
 let deferredPrompt = null;
 
+// install event
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
 
-  const btn1 = document.getElementById('installBtn');
-  const btn2 = document.getElementById('installBtnLogin');
-
-  if (btn1) btn1.style.display = 'block';
-  if (btn2) btn2.style.display = 'block';
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'block';
 });
 
+// button click (SAFE)
 document.addEventListener('click', async (e) => {
-  if (
-    e.target.id === 'installBtn' ||
-    e.target.id === 'installBtnLogin'
-  ) {
+  if (e.target.id === 'installBtn') {
+
     if (!deferredPrompt) {
       showToast('Install not ready', 'error');
       return;
     }
 
     deferredPrompt.prompt();
+
     const choice = await deferredPrompt.userChoice;
 
     if (choice.outcome === 'accepted') {
       showToast('App Installed', 'success');
+    } else {
+      showToast('Install Cancelled', 'error');
     }
 
     deferredPrompt = null;
+
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'none';
   }
 });
 </script>
