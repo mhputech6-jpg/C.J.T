@@ -1648,7 +1648,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 let deferredPrompt = null;
-
+document.getElementById('installBtnLogin').style.display = 'block';
 // install event
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
